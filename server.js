@@ -1,8 +1,9 @@
+dotenv.config(); // <-- MOVER PARA O TOPO ABSOLUTO
+
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv"); // Já importado
 
-dotenv.config(); // <-- MOVER PARA O TOPO ABSOLUTO
 
 const app = express();
 // A porta será definida pelo ambiente de hospedagem (Render).
