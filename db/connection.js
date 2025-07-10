@@ -1,5 +1,14 @@
 const mysql = require('mysql2');
 
+// --- INÍCIO DAS LINHAS DE DEBUG TEMPORÁRIAS ---
+console.log('--- DEBUG DE CONEXÃO COM O BANCO DE DADOS ---');
+console.log('DB_HOST sendo usado:', process.env.DB_HOST);
+console.log('DB_USER sendo usado:', process.env.DB_USER);
+console.log('DB_NAME sendo usado:', process.env.DB_NAME);
+console.log('DB_PORT sendo usado:', process.env.DB_PORT);
+console.log('-------------------------------------------');
+// --- FIM DAS LINHAS DE DEBUG TEMPORÁRIAS ---
+
 const connection = mysql.createConnection({ 
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
