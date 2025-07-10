@@ -1,20 +1,17 @@
-dotenv.config(); // <-- MOVER PARA O TOPO ABSOLUTO
+// A MAIORIA DOS TUTORIAIS RECOMENDA ESTA LINHA COMO A PRIMEIRA DO ARQUIVO PARA GARANTIR O LOAD DO .ENV
+require("dotenv").config(); // <-- ESTA LINHA PRECISA SER A PRIMEIRA EXECUTÁVEL
 
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv"); // Já importado
-
+// const dotenv = require("dotenv"); // <-- ESTA LINHA NÃO É MAIS NECESSÁRIA SE A PRIMEIRA ESTÁ LÁ
 
 const app = express();
-// A porta será definida pelo ambiente de hospedagem (Render).
-// O Render injeta a variável de ambiente PORT.
-// Seu app deve escutar nesta porta.
-const PORT = process.env.PORT || 3001; // 3001 é o fallback para desenvolvimento local
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
 
-// Rotas
+// Rotas (agora elas serão importadas DEPOIS que dotenv.config() for executado)
 const itemRoutes = require("./routes/itemRoutes");
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
