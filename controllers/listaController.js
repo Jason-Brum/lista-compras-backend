@@ -25,12 +25,25 @@ const listaController = {
       return res.status(400).json({ erro: "O nome da lista é obrigatório." });
     }
 
-    const query = `
-      INSERT INTO lista_de_compras (dataDeCriacao, tema, nomeDaLista, idUsuario)
-      VALUES (?, ?, ?, ?)
-    `;
-
     try {
+      // --- NOVO: VERIFICAR O LIMITE DE LISTAS POR USUÁRIO ---
+      const [contagemListas] = await db.query(
+        "SELECT COUNT(*) AS total_listas FROM lista_de_compras WHERE idUsuario = ?",
+        [idUsuarioAutenticado]
+      );
+
+      const totalListas = contagemListas[0].total_listas;
+
+      if (totalListas >= 5) {
+        return res.status(400).json({ erro: 'Você já atingiu o limite máximo de 5 listas. Por favor, apague uma lista existente para criar uma nova.' });
+      }
+      // --- FIM DA VERIFICAÇÃO DE LIMITE ---
+
+      const query = `
+        INSERT INTO lista_de_compras (dataDeCriacao, tema, nomeDaLista, idUsuario)
+        VALUES (?, ?, ?, ?)
+      `;
+
       const [result] = await db.query(query, [dataDeCriacao, tema || null, nomeDaLista, idUsuarioAutenticado]);
 
       res.status(201).json({
