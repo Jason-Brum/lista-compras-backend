@@ -1,10 +1,13 @@
 const db = require("../db/connection"); // Este 'db' agora é promise-compatible
+const NUMERO_MAXIMO_LISTAS = 5; // Definindo o limite máximo de listas por usuário
+
 
 const listaController = {
   // Listar listas de um usuário específico
   // O idUsuario vem do token (req.user.idUsuario), não do req.params
   listarListasPorUsuario: async (req, res) => {
     const idUsuarioAutenticado = req.user.idUsuario; // Pega o id do usuário do token (middleware)
+
 
     try {
       const [results] = await db.query("SELECT * FROM lista_de_compras WHERE idUsuario = ?", [idUsuarioAutenticado]);
@@ -34,8 +37,8 @@ const listaController = {
 
       const totalListas = contagemListas[0].total_listas;
 
-      if (totalListas >= 5) {
-        return res.status(400).json({ erro: 'Você já atingiu o limite máximo de 5 listas. Por favor, apague uma lista existente para criar uma nova.' });
+      if (totalListas >= NUMERO_MAXIMO_LISTAS) {
+        return res.status(400).json({ erro: `Você já atingiu o limite máximo de ${NUMERO_MAXIMO_LISTAS} listas. Por favor, apague uma lista existente para criar uma nova.` });
       }
       // --- FIM DA VERIFICAÇÃO DE LIMITE ---
 
