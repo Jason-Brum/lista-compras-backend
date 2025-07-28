@@ -1,9 +1,13 @@
 const db = require("../db/connection");
 
+const NUMERO_MAXIMO_ITENS = 25; // Definindo o limite máximo de itens por lista
+
 const itemController = {
   // Buscar todos os itens (idealmente, apenas os do usuário autenticado)
   getAllItems: async (req, res) => {
     const idUsuarioAutenticado = req.user.idUsuario; 
+
+    
 
     try {
       // Esta query já estava correta!
@@ -93,8 +97,8 @@ const itemController = {
       const [contagemItens] = await db.query("SELECT COUNT(*) AS total_itens FROM item WHERE idLista = ?", [idLista]);
       const totalItens = contagemItens[0].total_itens;
 
-      if (totalItens >= 5) {
-        return res.status(400).json({ erro: 'Você já atingiu o limite máximo de 5 itens para esta lista.' });
+      if (totalItens >= NUMERO_MAXIMO_ITENS) {
+        return res.status(400).json({ erro: `Você já atingiu o limite máximo de ${NUMERO_MAXIMO_ITENS} itens para esta lista.` });
       }
 
       // CORREÇÃO AQUI: 'INSERT' na mesma linha da crase
