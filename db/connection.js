@@ -1,37 +1,30 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-// --- LINHAS DE DEBUG TEMPORÁRIAS (MANTENHA POR ENQUANTO) ---
+// --- LINHAS DE DEBUG (PODE MANTER POR ENQUANTO) ---
 console.log('--- DEBUG DE CONEXÃO COM O BANCO DE DADOS ---');
 console.log('DB_HOST sendo usado:', process.env.DB_HOST);
 console.log('DB_USER sendo usado:', process.env.DB_USER);
 console.log('DB_NAME sendo usado:', process.env.DB_NAME);
 console.log('DB_PORT sendo usado:', process.env.DB_PORT);
 console.log('-------------------------------------------');
-// --- FIM DAS LINHAS DE DEBUG TEMPORÁRIAS ---
 
-const connection = mysql.createConnection({
+// CORREÇÃO: Trocamos createConnection por createPool e adicionamos opções de resiliência
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    // --- ADICIONE ESTAS LINHAS PARA SSL/TLS ---
     ssl: {
-        // Isso desabilita a verificação do certificado. Usar com cautela em produção,
-        // mas é comum para provedores que não fornecem CA certificates publicamente.
-        // Se a Hostinger exigir um certificado específico, 'rejectUnauthorized: false' pode não ser suficiente.
         rejectUnauthorized: false
-    }
-    // ------------------------------------------
+    },
+    waitForConnections: true,  // Espera por uma conexão disponível se todas estiverem em uso
+    connectionLimit: 10,       // Número máximo de conexões no pool
+    queueLimit: 0              // Fila de espera por conexões sem limite
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao MySQL:', err);
-        process.exit(1);
-    } else {
-        console.log('Conectado ao MySQL!');
-    }
-});
+console.log('Pool de conexões com o MySQL criado e pronto para uso!');
 
-module.exports = connection.promise();
+// Exportamos o pool. A interface .promise() garante que você pode continuar
+// usando await db.query(...) no resto do seu código sem nenhuma alteração.
+module.exports = pool;

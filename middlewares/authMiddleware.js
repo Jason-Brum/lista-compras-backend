@@ -24,12 +24,14 @@ const authMiddleware = async (req, res, next) => {
         req.user = user; // Anexa as informações do usuário à requisição
         next(); // Continua para a próxima função na rota
 
-    } catch (err) {
+        } catch (err) {
         console.error('Erro na validação do token:', err);
         if (err.name === 'TokenExpiredError') {
             return res.status(401).json({ error: 'Token expirado. Por favor, faça login novamente.' });
         }
-        return res.status(401).json({ error: 'Token inválido.' });
+        // Se o erro não for de token, provavelmente foi no banco de dados.
+        // Retornamos um erro 500 (Erro de Servidor) para indicar isso.
+        return res.status(500).json({ error: 'Erro interno ao validar a sessão do usuário.' });
     }
 };
 
